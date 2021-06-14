@@ -1,15 +1,18 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 
-namespace CsprojCleaner
-{
-    class Program
-    {
-        private static readonly string _csProjPath = @"/path/to/your/project.csproj";
-        
-        static void Main()
-        {
-            XmlDocument parsedXml = new XmlDocument();
-            parsedXml.Load(_csProjPath);
+namespace CsprojCleaner {
+    class Program {
+        static int Main(string[] args) {
+            if (args.Length != 1 || string.IsNullOrWhiteSpace(args[0])) {
+                Console.WriteLine("You must specify an argument with the absolute path to the .csproj file.");
+                return 1;
+            }
+
+            string csProjPath = args[0].Trim('"');
+
+            var parsedXml = new XmlDocument();
+            parsedXml.Load(csProjPath);
 
             new StaticContentFileRemover("bmp").CleanUpFiles(parsedXml);
             new StaticContentFileRemover("css").CleanUpFiles(parsedXml);
@@ -29,13 +32,15 @@ namespace CsprojCleaner
             new StaticContentFileRemover("ttf").CleanUpFiles(parsedXml);
             new StaticContentFileRemover("woff").CleanUpFiles(parsedXml);
             new StaticContentFileRemover("woff2").CleanUpFiles(parsedXml);
-            
+
             new WebFormsFileRemover("asax").CleanUpFiles(parsedXml);
             new WebFormsFileRemover("ascx").CleanUpFiles(parsedXml);
             new WebFormsFileRemover("aspx").CleanUpFiles(parsedXml);
             new WebFormsFileRemover("master").CleanUpFiles(parsedXml);
-            
-            parsedXml.Save(_csProjPath);
+
+            parsedXml.Save(csProjPath);
+
+            return 0;
         }
     }
 }
